@@ -5,7 +5,8 @@ var MyPromise = function(executor) {
 
   function resolve(arg) {
     for (var i = 0; i < deferreds.length; i++) {
-      deferreds[i](arg);
+      var callbackResult = deferreds[i].callback(arg);
+      deferreds[i].resolve(callbackResult);
     };
   };
 
@@ -33,6 +34,8 @@ function logCallback(value){
   console.log('got ' + value);
 }
 
-var fivePromise = fiveMachine();
-fivePromise.then(logCallback);
-fivePromise.then(logCallback);
+function add37(val){
+  return val + 37;
+};
+
+fiveMachine().then(add37).then(logCallback);
