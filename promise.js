@@ -14,7 +14,10 @@ var MyPromise = function(executor) {
   };
 
   this.then = function(callback) {
-    deferreds.push(callback);
+    var newPromise = new MyPromise(function(resolve, reject) {
+      deferreds.push({resolve: resolve, reject: reject, callback: callback});
+    });
+    return newPromise;
   };
 }
 
@@ -30,4 +33,6 @@ function logCallback(value){
   console.log('got ' + value);
 }
 
-fiveMachine().then(logCallback);
+var fivePromise = fiveMachine();
+fivePromise.then(logCallback);
+fivePromise.then(logCallback);
