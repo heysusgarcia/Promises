@@ -1,10 +1,21 @@
 var MyPromise = function(executor) {
+  //store all the registered functions in a deferreds array
   var deferreds = [];
 
+  //if the argument passed to resolve is a promise, then we can't call
+  //ourselves resolved. Instead we must WAIT until the promise is resolved
+  //and use it's resolution value to resolve ourself FOR REAL
   var resolve = function(arg) {
-    for (var i = 0; i < deferreds.length; i++) {
-      var callbackResult = deferreds[i].callback(arg);
-      deferreds[i].resolve(callbackResult);
+    if (arg && arg.then) {
+      //if it has a then, it is a promise so we recursively call resolve on ourself
+      arg.then(function(value) {
+        resolve(value);
+      });
+    } else {
+      for (var i = 0; i < deferreds.length; i++) {
+        var callbackResult = deferreds[i].callback(arg);
+        deferreds[i].resolve(callbackResult);
+      };
     };
   };
 
